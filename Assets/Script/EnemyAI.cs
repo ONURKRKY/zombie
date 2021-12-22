@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] float chaseRange=10f;
     float distantToTarget =Mathf.Infinity;
     NavMeshAgent navMeshAgent;
+    bool isProvoked=false;
     void Start()
     {
         navMeshAgent=GetComponent<NavMeshAgent>();
@@ -20,11 +22,39 @@ public class EnemyAI : MonoBehaviour
     {
         distantToTarget=Vector3.Distance(Target.position,transform.position);
 
-        if(distantToTarget<chaseRange)
+        if(isProvoked)
+        {
+            EngageTarget();
+        }
+        else if(distantToTarget<chaseRange)
         {        
-        navMeshAgent.SetDestination(Target.position);
+        isProvoked=true;
+        
         }
     }
+
+     void EngageTarget()
+    {
+        if(distantToTarget>=navMeshAgent.stoppingDistance)
+        {
+            ChaseTarget();
+        }
+         if(distantToTarget<navMeshAgent.stoppingDistance)
+        {
+            AttackTarget();
+        }
+    }
+
+    private void AttackTarget()
+    {
+       Debug.Log(name+"is seeked and destroying"+Target.name);
+    }
+
+    private void ChaseTarget()
+    {
+        navMeshAgent.SetDestination(Target.position);
+    }
+
     void OnDrawGizmosSelected()
     {
         
